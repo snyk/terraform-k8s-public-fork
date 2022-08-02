@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"context"
+	"os"
+	"strconv"
 
 	appv1alpha1 "github.com/hashicorp/terraform-k8s/api/v1alpha1"
 	"github.com/hashicorp/terraform-k8s/workspacehelper"
@@ -17,7 +19,16 @@ import (
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
 func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	// Create a new controller
-	c, err := controller.New("workspace-controller", mgr, controller.Options{Reconciler: r})
+	// Ratelimiter: retry every 30mins. Wait time grows exp up to a week.
+	baseDelayMultiplier, err := strconv.Atoi(os.Getenv("BASE_DELAY_MULTIPLIER"))
+	maxDelayMultiplier, err := strconv.Atoi(os.Getenv("MAX_DELAY_MULTIPLIER"))
+	startingTokens, err := strconv.Atoi(os.Getenv("TOKENS"))
+	tokenRefilRate, err := strconv.Atoi(os.Getenv("TOKENS_REFIL_RATE"))
+	c, err := controller.New("workspace-controller", mgr,
+		controller.Options{
+			Reconciler: r,
+			RateLimiter: workspacehelper.WorkspaceRateLimiter(
+				baseDelayMultiplier, maxDelayMultiplier , startingTokens, tokenRefilRate)})
 	if err != nil {
 		return err
 	}
