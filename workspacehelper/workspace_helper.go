@@ -491,7 +491,7 @@ func (r *WorkspaceHelper) Reconcile(ctx context.Context, request reconcile.Reque
 	if err != nil {
 		return reconcile.Result{}, err
 	} else if shouldRequeue {
-		return reconcile.Result{Requeue: true, RequeueAfter: time.Duration(1)*time.Second}, nil
+		return reconcile.Result{Requeue: true}, nil
 	}
 
 	// process the run result
