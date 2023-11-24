@@ -209,7 +209,9 @@ func (r *WorkspaceHelper) runInProgress(instance *appv1alpha1.Workspace) (bool, 
 		"RunID", instance.Status.RunID, "RunStatus", instance.Status.RunStatus)
 	runStatus, err := r.tfclient.CheckRun(instance.Status.RunID)
 	if err != nil {
-		r.reqLogger.Error(err, "Could not get run ID")
+		r.reqLogger.Error(err, "Could not get run ID",
+			"WorkspaceID", instance.Status.WorkspaceID,
+			"RunID", instance.Status.RunID)
 		return false, err
 	}
 
@@ -235,12 +237,15 @@ func (r *WorkspaceHelper) processFinishedRun(instance *appv1alpha1.Workspace) er
 		return nil
 	}
 
-	r.reqLogger.Info("Checking outputs", "Organization",
-		instance.Spec.Organization, "WorkspaceID", instance.Status.WorkspaceID,
+	r.reqLogger.Info("Checking outputs",
+		"Organization", instance.Spec.Organization,
+		"WorkspaceID", instance.Status.WorkspaceID,
 		"RunID", instance.Status.RunID)
 	outputs, err := r.tfclient.CheckOutputs(instance.Status.WorkspaceID, instance.Status.RunID)
 	if err != nil {
-		r.reqLogger.Error(err, "Could not get run ID")
+		r.reqLogger.Error(err, "Could not get run ID",
+			"WorkspaceID", instance.Status.WorkspaceID,
+			"RunID", instance.Status.RunID)
 		return err
 	}
 
