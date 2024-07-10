@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: terraform-k8s-public-fork
+spec:
+  type: external-tooling
+  lifecycle: "-"
+  owner: cloud-platforms
